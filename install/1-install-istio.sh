@@ -287,6 +287,6 @@ if ! kubectl get secret cacerts -n istio-system > /dev/null 2>&1 ; then
 fi
 
 action "Installing Istio" install_istio || exit 1
-action "Updating CoreDNS configuration" update_coredns || exit 1
+# action "Updating CoreDNS configuration" update_coredns || exit 1
 
 kubectl get pods -n istio-system
