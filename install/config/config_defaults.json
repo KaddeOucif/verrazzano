@@ -1,0 +1,15 @@
+{
+   "environmentName": "default",
+   "dns": {
+      "type": "xip.io",
+      "suffix": "xip.io"
+   },
+   "ingress": {
+      "type": "loadBalancer",
+      "nginx": {
+         "extraInstallArgs": [],
+         "overridePortSpec": ""
+      }
+   }
+}
+
