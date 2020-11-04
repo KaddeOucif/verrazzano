@@ -11,7 +11,7 @@
          "patchDeploymentSpec": "",
          "additionalExternalIPs": []
       },
-      "istio": {
+      "application": {
          "additionalExternalIPs": []
       }
    }
