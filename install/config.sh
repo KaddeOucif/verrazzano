@@ -54,6 +54,21 @@ function get_config_array() {
   echo "${config_array[@]}"
 }
 
+# Make sure CONFIG_JSON and DEFAULT_CONFIG_JSON contain valid JSON
+function validate_config_json {
+  set -o pipefail
+  echo "$CONFIG_JSON" | jq > /dev/null
+  if [ $? -ne 0 ]; then
+    log "Failed to read installation config file contents!"
+    return 1
+  fi
+  echo "$DEFAULT_CONFIG_JSON" | jq > /dev/null
+  if [ $? -ne 0 ]; then
+    log "Failed to read default installation config file contents!"
+    return 1
+  fi
+}
+
 log "Reading default installation config file $DEFAULT_CONFIG_FILE"
 DEFAULT_CONFIG_JSON="$(read_config $DEFAULT_CONFIG_FILE)"
 
@@ -64,6 +79,8 @@ else
   log "Reading installation config file $INSTALL_CONFIG_FILE"
   CONFIG_JSON="$(read_config $INSTALL_CONFIG_FILE)"
 fi
+
+validate_config_json || exit 1
 
 ## Test cases - TODO remove before merging
 #ENV_NAME=$(get_config_value ".environmentName")
