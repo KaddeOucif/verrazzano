@@ -66,9 +66,9 @@ else
 fi
 
 ## Test cases - TODO remove before merging
-ENV_NAME=$(get_config_value ".environmentName")
-log "got environmentName value ${ENV_NAME}"
-EXTRA_ARG0=$(get_config_value ".ingress.verrazzano.extraInstallArgs[0]")
-log "status $? and got 0th extra argument value ${EXTRA_ARG0}"
-EXTRA_ARGS_ARR=($(get_config_array ".ingress.verrazzano.extraInstallArgs[]"))
-echo "status $? and got array [ ${EXTRA_ARGS_ARR[@]} ] containing ${EXTRA_ARGS_ARR[0]} and ${EXTRA_ARGS_ARR[1]}"
+#ENV_NAME=$(get_config_value ".environmentName")
+#log "got environmentName value ${ENV_NAME}"
+#EXTRA_ARG0=$(get_config_value ".ingress.verrazzano.extraInstallArgs[0]")
+#log "status $? and got 0th extra argument value ${EXTRA_ARG0}"
+#EXTRA_ARGS_ARR=($(get_config_array ".ingress.verrazzano.extraInstallArgs[]"))
+#echo "status $? and got array [ ${EXTRA_ARGS_ARR[@]} ] containing ${EXTRA_ARGS_ARR[0]} and ${EXTRA_ARGS_ARR[1]}"
