@@ -1,14 +1,18 @@
 {
    "environmentName": "default",
    "dns": {
-      "type": "xip.io",
-      "suffix": "xip.io"
+      "type": "xip.io"
    },
    "ingress": {
       "type": "loadBalancer",
-      "nginx": {
+      "verrazzano": {
          "extraInstallArgs": [],
-         "overridePortSpec": ""
+         "patchServiceSpec": "",
+         "patchDeploymentSpec": "",
+         "additionalExternalIPs": []
+      },
+      "istio": {
+         "additionalExternalIPs": []
       }
    }
 }
