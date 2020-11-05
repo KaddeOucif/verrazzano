@@ -7,8 +7,6 @@ SCRIPT_DIR=$(cd $(dirname "$0"); pwd -P)
 . $SCRIPT_DIR/common.sh
 . $SCRIPT_DIR/config.sh
 
-INGRESS_TYPE=LoadBalancer #this is true for both OKE and OLCNE clusters
-
 set -eu
 
 function install_nginx_ingress_controller()
@@ -21,8 +19,14 @@ function install_nginx_ingress_controller()
     helm repo add stable https://kubernetes-charts.storage.googleapis.com
     helm repo update
 
-    log "DEVA helm repo updated"
-    local ingress_type=$(get_config_value ".ingress.type")
+    local ingress_type=""
+    ingress_type=$(get_config_value ".ingress.type")
+
+    if [ ${ingress_type} == "nodePort" ]; then
+      ingress_type="NodePort"
+    elif [ ${ingress_type} == "loadBalancer" ]; then
+      ingress_type="LoadBalancer"
+    fi
 
     log "DEVA ingress type is $ingress_type"
     local EXTRA_NGINX_ARGUMENTS=""
@@ -31,7 +35,7 @@ function install_nginx_ingress_controller()
     local extra_install_args_len=0
     local param_name=""
     local param_value=""
-    if [ "$ingress_type" == "loadBalancer" ]; then
+    if [ "$ingress_type" == "LoadBalancer" ]; then
       # Get any patch for the service and deployment specs
       patch_service_spec="$(get_config_value '.ingress.verrazzano.patchServiceSpec')"
       # Handle any additional NGINX install args - since NGINX is for Verrazzano system Ingress,
@@ -72,7 +76,7 @@ function install_nginx_ingress_controller()
       --set controller.podAnnotations.'prometheus\.io/scrape'=true \
       --set controller.podAnnotations.'system\.io/scrape'=true \
       --version $NGINX_INGRESS_CONTROLLER_VERSION \
-      --set controller.service.type="${INGRESS_TYPE}" \
+      --set controller.service.type="${ingress_type}" \
       --set controller.publishService.enabled=true \
       --timeout 15m0s \
       ${EXTRA_NGINX_ARGUMENTS} \
