@@ -1,0 +1,21 @@
+{
+   "environmentName": "default",
+   "dns": {
+      "type": "oci",
+      "oci": {
+         "dnsZoneName": "my.dns.zone.name",
+         "dnsZoneOcid": "dnsZoneOcid",
+         "dnsZoneCompartmentOcid": "dnsZoneCompartmentOcid",
+         "userOcid": "userOcid",
+         "tenancyOcid": "tenancyOcid",
+         "region": "region",
+         "fingerPrint": "fingerPrint",
+         "privateKeyFile": "privateKeyFile",
+         "privateKeyFilePassphrase": "privateKeyFilePassphrase",
+         "email": "email"
+      }
+   },
+   "ingress": {
+      "type": "loadBalancer"
+   }
+}
