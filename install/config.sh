@@ -44,14 +44,16 @@ function get_config_array() {
   set -o pipefail
   local jq_expr="$1"
   local config_array=($(echo $CONFIG_JSON | jq -rc $jq_expr | tr "\n" " "))
-  if [ $? -ne 0 ] || [ -z "$config_array" ]; then
+  if [ $? -ne 0 ] || [ ${#config_array[@]} -eq 0 ]; then
     config_array=($(echo $DEFAULT_CONFIG_JSON | jq -rc $jq_expr | tr "\n" " "))
   fi
   if [ $? -ne 0 ]; then
     log "Error reading $jq_expr from config files"
     return 1
   fi
-  echo "${config_array[@]}"
+  if [ ${#config_array[@]} -ne 0 ]; then
+    echo "${config_array[@]}"
+  fi
 }
 
 function validate_dns_section {
