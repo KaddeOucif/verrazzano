@@ -62,8 +62,64 @@ function validate_dns_section {
     #there should be an "external" section containing a suffix
     echo "$dnsJson" | jq '.external.suffix' || fail "For dns type external, a suffix is expected in section .dns.external.suffix of the config file"
   elif [ "$dnsType" == "oci" ]; then
-    # TODO OCI related validation here?
-    log "TODO OCI DNS Type validation"
+    CHECK_VALUES=false
+    value=$(get_config_value '.dns.oci.region')
+    if [ -z "$value" ]; then
+        echo "For dns type oci, the value .dns.oci.region must be set to the OCI Region"
+        CHECK_VALUES=true
+    fi
+
+    value=$(get_config_value '.dns.oci.tenancyOcid')
+    if [ -z "$value" ]; then
+        echo "For dns type oci, the value .dns.oci.tenancyOcid must be set to the OCI Tenancy OCID"
+        CHECK_VALUES=true
+    fi
+
+    value=$(get_config_value ".dns.oci.userOcid")
+    if [ -z "$value" ]; then
+        echo "For dns type oci, the value .dns.oci.userOcid must be set to the OCI User OCID"
+        CHECK_VALUES=true
+    fi
+
+    value=$(get_config_value ".dns.oci.dnsZoneCompartmentOcid")
+    if [ -z "$value" ]; then
+        echo "For dns type oci, the value .dns.oci.dnsZoneCompartmentOcid must be set to the OCI Compartment OCID"
+        CHECK_VALUES=true
+    fi
+
+    value=$(get_config_value ".dns.oci.fingerprint")
+    if [ -z "$value" ]; then
+        echo "For dns type oci, the value .dns.oci.fingerprint must be set to the OCI Fingerprint"
+        CHECK_VALUES=true
+    fi
+
+    value=$(get_config_value ".dns.oci.privateKeyFile")
+    if [ -z "$value" ]; then
+        echo "For dns type oci, the value .dns.oci.privateKeyFile must be set to the OCI Private Key File"
+        CHECK_VALUES=true
+    fi
+
+    value=$(get_config_value ".dns.oci.emailAddress")
+    if [ -z "$value" ]; then
+        echo "For dns type oci, the value .dns.oci.emailAddress must be set to your email address"
+        CHECK_VALUES=true
+    fi
+
+    value=$(get_config_value ".dns.oci.dnsZoneOcid")
+    if [ -z "$value" ]; then
+        echo "For dns type oci, the value .dns.oci.dnsZoneOcid must be set to the OCI DNS Zone OCID"
+        CHECK_VALUES=true
+    fi
+
+    value=$(get_config_value ".dns.oci.dnsZoneName")
+    if [ -z "$value" ]; then
+        echo "For dns type oci, the value .dns.oci.dnsZoneName must be set to the OCI DNS Zone Name"
+        CHECK_VALUES=true
+    fi
+
+    if [ $CHECK_VALUES = true ]; then
+        exit 1
+    fi
   elif [ "$dnsType" != "xip.io" ]; then
     fail "Unknown dns type $dnsType - valid values are xip.io, oci and external"
   fi

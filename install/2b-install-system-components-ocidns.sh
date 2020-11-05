@@ -15,57 +15,17 @@ CONFIG_DIR=$SCRIPT_DIR/config
 TMP_DIR=$(mktemp -d)
 trap 'rc=$?; rm -rf ${TMP_DIR} || true; _logging_exit_handler $rc' EXIT
 
-CHECK_VALUES=false
 set +u
 OCI_PRIVATE_KEY_PASSPHRASE=$(get_config_value ".dns.oci.privateKeyPassphrase")
 OCI_REGION=$(get_config_value ".dns.oci.region")
-if [ -z "$OCI_REGION" ]; then
-    echo "OCI_REGION environment variable must set to OCI Region"
-    CHECK_VALUES=true
-fi
 OCI_TENANCY_OCID=$(get_config_value ".dns.oci.tenancyOcid")
-if [ -z "$OCI_TENANCY_OCID" ]; then
-    echo "OCI_TENANCY_OCID environment variable must set to OCI Tenancy OCID"
-    CHECK_VALUES=true
-fi
 OCI_USER_OCID=$(get_config_value ".dns.oci.userOcid")
-if [ -z "$OCI_USER_OCID" ]; then
-    echo "OCI_USER_OCID environment variable must set to OCI User OCID"
-    CHECK_VALUES=true
-fi
-OCI_COMPARTMENT_OCID=$(get_config_value ".dns.oci.compartmentOcid")
-if [ -z "$OCI_COMPARTMENT_OCID" ]; then
-    echo "OCI_COMPARTMENT_OCID environment variable must set to OCI Compartment OCID"
-    CHECK_VALUES=true
-fi
+OCI_COMPARTMENT_OCID=$(get_config_value ".dns.oci.dnsZoneCompartmentOcid")
 OCI_FINGERPRINT=$(get_config_value ".dns.oci.fingerprint")
-if [ -z "$OCI_FINGERPRINT" ]; then
-    echo "OCI_FINGERPRINT environment variable must set to OCI Fingerprint"
-    CHECK_VALUES=true
-fi
 OCI_PRIVATE_KEY_FILE=$(get_config_value ".dns.oci.privateKeyFile")
-if [ -z "$OCI_PRIVATE_KEY_FILE" ]; then
-    echo "OCI_PRIVATE_KEY_FILE environment variable must set to OCI Private Key File"
-    CHECK_VALUES=true
-fi
 EMAIL_ADDRESS=$(get_config_value ".dns.oci.emailAddress")
-if [ -z "$EMAIL_ADDRESS" ]; then
-    echo "EMAIL_ADDRESS environment variable must set to your email address"
-    CHECK_VALUES=true
-fi
 OCI_DNS_ZONE_OCID=$(get_config_value ".dns.oci.dnsZoneOcid")
-if [ -z "$OCI_DNS_ZONE_OCID" ]; then
-    echo "OCI_DNS_ZONE_OCID environment variable must set to OCI DNS Zone OCID"
-    CHECK_VALUES=true
-fi
 OCI_DNS_ZONE_NAME=$(get_config_value ".dns.oci.dnsZoneName")
-if [ -z "$OCI_DNS_ZONE_NAME" ]; then
-    echo "OCI_DNS_ZONE_NAME environment variable must set to OCI DNS Zone Name"
-    CHECK_VALUES=true
-fi
-if [ $CHECK_VALUES = true ]; then
-    exit 1
-fi
 
 [ ! -f $OCI_PRIVATE_KEY_FILE ] && { echo $OCI_PRIVATE_KEY_FILE does not exist; exit 1; }
 
