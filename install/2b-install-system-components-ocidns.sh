@@ -187,16 +187,6 @@ function install_rancher()
     kubectl -n cattle-system create secret generic rancher-admin-secret --from-literal=password="$ADMIN_PW"
 }
 
-function usage {
-    consoleerr
-    consoleerr "usage: $0 [-n name]"
-    consoleerr "  -n name        Environment Name. Required."
-    consoleerr "  -d dns_type    DNS type [oci]. Optional.  Defaults to oci."
-    consoleerr "  -h             Help"
-    consoleerr
-    exit 1
-}
-
 NAME=$(get_config_value ".environmentName")
 DNS_TYPE=$(get_config_value ".dns.type")
 
@@ -209,13 +199,11 @@ fi
 if [ $DNS_TYPE != "oci" ]; then
   consoleerr
   consoleerr "Unknown DNS type ${DNS_TYPE}!"
-  usage
 fi
 
 if [ -z "$NAME" ]; then
     consoleerr
     consoleerr "-n option is required"
-    usage
 fi
 
 command -v patch >/dev/null 2>&1 || {
