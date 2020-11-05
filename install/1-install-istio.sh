@@ -8,7 +8,13 @@ SCRIPT_DIR=$(cd $(dirname "$0"); pwd -P)
 . $SCRIPT_DIR/common.sh
 . $SCRIPT_DIR/config.sh
 
-INGRESS_TYPE=LoadBalancer #this is true for both OKE and OLCNE clusters
+INGRESS_TYPE=$(get_config_value ".ingress.type")
+
+if [ ${INGRESS_TYPE} == "nodePort" ]; then
+  istio_ingressgateway_type="NodePort"
+elif [ ${INGRESS_TYPE} == "loadBalancer" ]; then
+  istio_ingressgateway_type="LoadBalancer"
+fi
 
 CONFIG_DIR=$SCRIPT_DIR/config
 TMP_DIR=$(mktemp -d)
@@ -103,7 +109,7 @@ function install_istio()
         --namespace istio-system \
         --set global.hub=$GLOBAL_HUB_REPO \
         --set global.tag=$ISTIO_VERSION \
-        --set gateways.istio-ingressgateway.type="${INGRESS_TYPE}" \
+        --set gateways.istio-ingressgateway.type="${istio_ingressgateway_type}" \
         --set sidecarInjectorWebhook.rewriteAppHTTPProbe=true \
         --set grafana.enabled=true \
         --set grafana.image.repository=$GRAFANA_REPO \
