@@ -38,7 +38,7 @@ verrazzanoOperator:
 monitoringOperator:
   name: verrazzano-monitoring-operator
   imageName: ghcr.io/verrazzano/verrazzano-monitoring-operator-jenkins
-  imageVersion: 0.5.0-20201104215942-abd23f6 
+  imageVersion: 0.5.0-20201105170833-e46a75f
   metricsPort: 8090
   defaultSimpleCompReplicas: 1
   defaultPrometheusReplicas: 1
