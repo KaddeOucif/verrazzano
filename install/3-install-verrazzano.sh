@@ -20,32 +20,16 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-# figure out INGRESS_IP
 INGRESS_TYPE=$(get_config_value ".ingress.type")
-if [ ${INGRESS_TYPE} == "nodePort" ]; then
-  INGRESS_IP=$(get_config_value ".ingress.nodePort.ingressIp")
-elif [ ${INGRESS_TYPE} == "loadBalancer" ]; then
-  # Test for IP from status, if that is not present then assume an on premises installation and use the externalIPs hint
-  INGRESS_IP=$(kubectl get svc ingress-controller-nginx-ingress-controller -n ingress-nginx -o json | jq -r '.status.loadBalancer.ingress[0].ip')
-  if [ ${INGRESS_IP} == "null" ]; then
-    INGRESS_IP=$(kubectl get svc ingress-controller-nginx-ingress-controller -n ingress-nginx -o json  | jq -r '.spec.externalIPs[0]')
-  fi
-fi
+INGRESS_IP=$(get_ingress_ip)
 if [ -n "${INGRESS_IP:-}" ]; then
   log "Found ingress address ${INGRESS_IP}"
 else
   fail "Failed to find ingress address."
 fi
 
-# figure out DNS_SUFFIX
 DNS_TYPE=$(get_config_value ".dns.type")
-if [ $DNS_TYPE == "xip.io" ]; then
-  DNS_SUFFIX="${INGRESS_IP}".xip.io
-elif [ $DNS_TYPE == "oci" ]; then
-  DNS_SUFFIX=$(get_config_value ".dns.oci.dnsZoneName")
-elif [ $DNS_TYPE == "external" ]; then
-  DNS_SUFFIX=$(get_config_value ".dns.external.suffix")
-fi
+DNS_SUFFIX=$(get_dns_suffix ${INGRESS_IP})
 
 # Check if the nginx ingress ports are accessible
 function check_ingress_ports() {

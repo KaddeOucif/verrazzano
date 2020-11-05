@@ -78,6 +78,34 @@ function validate_config_json {
   validate_dns_section "$jsonToValidate"
 }
 
+function get_ingress_ip {
+  local ingress_type=$(get_config_value ".ingress.type")
+  if [ ${ingress_type} == "nodePort" ]; then
+    get_ingress_ip=$(get_config_value ".ingress.nodePort.ingressIp")
+  elif [ ${ingress_type} == "loadBalancer" ]; then
+    # Test for IP from status, if that is not present then assume an on premises installation and use the externalIPs hint
+    get_ingress_ip=$(kubectl get svc ingress-controller-nginx-ingress-controller -n ingress-nginx -o json | jq -r '.status.loadBalancer.ingress[0].ip')
+    # In case of OLCNE, it would return null
+    if [ ${get_ingress_ip} == "null" ]; then
+      get_ingress_ip=$(kubectl get svc ingress-controller-nginx-ingress-controller -n ingress-nginx -o json  | jq -r '.spec.externalIPs[0]')
+    fi
+  fi
+  echo ${get_ingress_ip}
+}
+
+function get_dns_suffix {
+  local ingress_ip=$1
+  local dns_type=$(get_config_value ".dns.type")
+  if [ $dns_type == "xip.io" ]; then
+    dns_suffix="${ingress_ip}".xip.io
+  elif [ $dns_type == "oci" ]; then
+    dns_suffix=$(get_config_value ".dns.oci.dnsZoneName")
+  elif [ $dns_type == "external" ]; then
+    dns_suffix=$(get_config_value ".dns.external.suffix")
+  fi
+  echo ${dns_suffix}
+}
+
 log "Reading default installation config file $DEFAULT_CONFIG_FILE"
 DEFAULT_CONFIG_JSON="$(read_config $DEFAULT_CONFIG_FILE)"
 
