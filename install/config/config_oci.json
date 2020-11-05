@@ -3,16 +3,16 @@
    "dns": {
       "type": "oci",
       "oci": {
-         "dnsZoneName": "my.dns.zone.name",
-         "dnsZoneOcid": "dnsZoneOcid",
-         "dnsZoneCompartmentOcid": "dnsZoneCompartmentOcid",
-         "userOcid": "userOcid",
-         "tenancyOcid": "tenancyOcid",
          "region": "region",
-         "fingerPrint": "fingerPrint",
+         "tenancyOcid": "tenancyOcid",
+         "userOcid": "userOcid",
+         "dnsZoneCompartmentOcid": "dnsZoneCompartmentOcid",
+         "fingerprint": "fingerprint",
          "privateKeyFile": "privateKeyFile",
-         "privateKeyFilePassphrase": "privateKeyFilePassphrase",
-         "email": "email"
+         "privateKeyPassphrase": "privateKeyPassphrase",
+         "emailAddress": "emailAddress",
+         "dnsZoneOcid": "dnsZoneOcid",
+         "dnsZoneName": "my.dns.zone.name"
       }
    },
    "ingress": {
