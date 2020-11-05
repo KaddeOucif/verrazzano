@@ -355,8 +355,6 @@ spec:
             requests:
               memory: {{ .Values.monitoringOperator.RequestMemory }}
           env:
-            - name: SINGLE_SYSTEM_VMI
-              value: "false"
             - name: GRAFANA_IMAGE
               value: {{ .Values.monitoringOperator.grafanaImage }}
             - name: PROMETHEUS_IMAGE
