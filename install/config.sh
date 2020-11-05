@@ -43,9 +43,9 @@ function get_config_value() {
 function get_config_array() {
   set -o pipefail
   local jq_expr="$1"
-  local config_array=($(echo $CONFIG_JSON | jq -c $jq_expr | tr "\n" " "))
+  local config_array=($(echo $CONFIG_JSON | jq -rc $jq_expr | tr "\n" " "))
   if [ $? -ne 0 ] || [ -z "$config_array" ]; then
-    config_array=($(echo $DEFAULT_CONFIG_JSON | jq -c $jq_expr | tr "\n" " "))
+    config_array=($(echo $DEFAULT_CONFIG_JSON | jq -rc $jq_expr | tr "\n" " "))
   fi
   if [ $? -ne 0 ]; then
     log "Error reading $jq_expr from config files"
@@ -54,19 +54,28 @@ function get_config_array() {
   echo "${config_array[@]}"
 }
 
+function validate_dns_section {
+  set -o pipefail
+  local jsonToValidate=$1
+  local dnsType=$(get_config_value '.dns.type') || fail "Could not get dns type from config"
+  if [ "$dnsType" == "external" ]; then
+    #there should be an "external" section containing a suffix
+    echo "$dnsJson" | jq '.external.suffix' || fail "For dns type external, a suffix is expected in section .dns.external.suffix of the config file"
+  elif [ "$dnsType" == "oci" ]; then
+    # TODO OCI related validation here?
+    log "TODO OCI DNS Type validation"
+  elif [ "$dnsType" != "xip.io" ]; then
+    fail "Unknown dns type $dnsType - valid values are xip.io, oci and external"
+  fi
+}
+
 # Make sure CONFIG_JSON and DEFAULT_CONFIG_JSON contain valid JSON
 function validate_config_json {
   set -o pipefail
-  echo "$CONFIG_JSON" | jq > /dev/null
-  if [ $? -ne 0 ]; then
-    log "Failed to read installation config file contents!"
-    return 1
-  fi
-  echo "$DEFAULT_CONFIG_JSON" | jq > /dev/null
-  if [ $? -ne 0 ]; then
-    log "Failed to read default installation config file contents!"
-    return 1
-  fi
+  local jsonToValidate=$1
+  echo "$jsonToValidate" | jq > /dev/null || fail "Failed to read installation config file contents. Make sure it is valid JSON"
+
+  validate_dns_section "$jsonToValidate"
 }
 
 log "Reading default installation config file $DEFAULT_CONFIG_FILE"
@@ -80,7 +89,8 @@ else
   CONFIG_JSON="$(read_config $INSTALL_CONFIG_FILE)"
 fi
 
-validate_config_json || exit 1
+validate_config_json "$CONFIG_JSON" || fail "Installation config is invalid"
+validate_config_json "$DEFAULT_CONFIG_FILECONFIG_JSON" || fail "Default installation config is invalid"
 
 ## Test cases - TODO remove before merging
 #ENV_NAME=$(get_config_value ".environmentName")
